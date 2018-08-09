@@ -18,10 +18,7 @@ final class MySql implements SqlInterface
 
     public function __construct(string $query, string $types = NULL, &...$vars)
     {
-        if (self::$db === NULL) {
-            self::$db = $this->connect();
-            $this->reportAllErrors();
-        }
+        $this->init();
         $this->stmt = $this->prepareAndBindParam($query, $types, ...$vars);
     }
 
@@ -43,6 +40,14 @@ final class MySql implements SqlInterface
         $arr = $this->fetchObject($this->stmt->get_result());
         $this->stmt->reset();
         return $arr;
+    }
+
+    private function init(): void
+    {
+        if (self::$db === NULL) {
+            self::$db = $this->connect();
+            $this->reportAllErrors();
+        }
     }
 
     private function fetchObject(mysqli_result $result): array

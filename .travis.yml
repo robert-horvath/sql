@@ -12,6 +12,5 @@ before_install:
   - cat vendor/composer/autoload_psr4.php
   - mysql < tests/test_db.sql --verbose
   
-
 after_success:
   - bash <(curl -s https://codecov.io/bash)
