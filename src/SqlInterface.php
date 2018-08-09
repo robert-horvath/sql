@@ -4,11 +4,9 @@ namespace RHo\Sql;
 interface SqlInterface
 {
 
-    public function __construct(string $query, string $types = NULL, &...$vars);
-
-    public static function disconnect(): bool;
-
     public function ping(): bool;
+
+    public function prepareWithParam(string $query, string $types = NULL, &...$vars): void;
 
     public function execute(): array;
 }

@@ -11,27 +11,25 @@ final class MySql implements SqlInterface
 {
 
     /** @var _mysqli */
-    private static $db = NULL;
+    private $db;
 
     /** @var mysqli_stmt */
     private $stmt;
 
-    public function __construct(string $query, string $types = NULL, &...$vars)
+    public function __construct()
     {
-        $this->init();
-        $this->stmt = $this->prepareAndBindParam($query, $types, ...$vars);
+        $this->db = $this->connect();
+        $this->reportAllErrors();
     }
 
-    public static function disconnect(): bool
+    public function __destruct()
     {
-        $retVal = self::$db->close();
-        self::$db = NULL;
-        return $retVal;
+        $this->db->close();
     }
 
     public function ping(): bool
     {
-        return self::$db->ping();
+        return $this->db->ping();
     }
 
     public function execute(): array
@@ -42,12 +40,11 @@ final class MySql implements SqlInterface
         return $arr;
     }
 
-    private function init(): void
+    public function prepareWithParam(string $query, string $types = NULL, &...$vars): void
     {
-        if (self::$db === NULL) {
-            self::$db = $this->connect();
-            $this->reportAllErrors();
-        }
+        $this->stmt = $this->db->prepare($query);
+        if ($types !== NULL)
+            $this->stmt->bind_param($types, ...$vars);
     }
 
     private function fetchObject(mysqli_result $result): array
@@ -70,13 +67,5 @@ final class MySql implements SqlInterface
     {
         $driver = new mysqli_driver();
         $driver->report_mode = MYSQLI_REPORT_ALL;
-    }
-
-    private function prepareAndBindParam(string $query, ?string $types, &...$vars): mysqli_stmt
-    {
-        $stmt = self::$db->prepare($query);
-        if ($types !== NULL)
-            $stmt->bind_param($types, ...$vars);
-        return $stmt;
     }
 }

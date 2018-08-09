@@ -9,9 +9,11 @@ class MySqlTest extends TestCase
 
     public function testStoredProcedure(): void
     {
+        $db = new \RHo\Sql\MySql();
+
         $i = 9;
         $s = '!';
-        $db = new \RHo\Sql\MySql('CALL `test_schema`.sp(?,?)', 'is', $i, $s);
+        $db->prepareWithParam('CALL `test_schema`.sp(?,?)', 'is', $i, $s);
         $this->assertTrue($db->ping());
 
         $this->assertEquals([
@@ -41,9 +43,44 @@ class MySqlTest extends TestCase
         $this->assertTrue($db->ping());
     }
 
+    public function testStoredProcedures(): void
+    {
+        $db1 = new \RHo\Sql\MySql();
+        $db2 = new \RHo\Sql\MySql();
+
+        $i1 = 19;
+        $s1 = '!';
+        $i2 = 29;
+        $s2 = '#';
+
+        $db1->prepareWithParam('CALL `test_schema`.sp(?,?)', 'is', $i1, $s1);
+        $db2->prepareWithParam('CALL `test_schema`.sp(?,?)', 'is', $i2, $s2);
+        $this->assertTrue($db1->ping());
+        $this->assertTrue($db2->ping());
+
+        $this->assertEquals([
+            (object) [
+                'id' => 20,
+                'value' => 'twenty!'
+            ],
+            (object) [
+                'id' => 30,
+                'value' => 'thirty!'
+            ]
+        ], $db1->execute());
+
+        $this->assertEquals([
+            (object) [
+                'id' => 30,
+                'value' => 'thirty#'
+            ]
+        ], $db2->execute());
+    }
+
     public function testFunction1(): void
     {
-        $db = new \RHo\Sql\MySql('SELECT `test_schema`.f1() as `x`');
+        $db = new \RHo\Sql\MySql();
+        $db->prepareWithParam('SELECT `test_schema`.f1() as `x`');
         $this->assertEquals([
             (object) [
                 'x' => '100'
@@ -55,7 +92,8 @@ class MySqlTest extends TestCase
     public function testFunction2(): void
     {
         $i = 0;
-        $db = new \RHo\Sql\MySql('SELECT `test_schema`.f2(?) as `i`', 'i', $i);
+        $db = new \RHo\Sql\MySql();
+        $db->prepareWithParam('SELECT `test_schema`.f2(?) as `i`', 'i', $i);
         $this->assertEquals([
             (object) [
                 'i' => 1
@@ -71,11 +109,39 @@ class MySqlTest extends TestCase
         ], $db->execute());
     }
 
-    public function testDisconnect(): void
+    public function testStoredProcAndFunction(): void
     {
-        $db = new \RHo\Sql\MySql('SET @a=1');
-        $this->assertTrue($db->ping());
-        $this->assertTrue($db::disconnect());
+        $db = new \RHo\Sql\MySql();
+
+        $i = 19;
+        $s = '%';
+
+        $db->prepareWithParam('CALL `test_schema`.sp(?,?)', 'is', $i, $s);
+
+        $this->assertEquals([
+            (object) [
+                'id' => 20,
+                'value' => 'twenty%'
+            ],
+            (object) [
+                'id' => 30,
+                'value' => 'thirty%'
+            ]
+        ], $db->execute());
+
+        $db->prepareWithParam('SELECT `test_schema`.f2(?) as `i`', 'i', $i);
+        $this->assertEquals([
+            (object) [
+                'i' => 20
+            ]
+        ], $db->execute());
+
+        $i = - 1;
+        $this->assertEquals([
+            (object) [
+                'i' => 0
+            ]
+        ], $db->execute());
     }
 
     public function testConnectionErrorWithUnknownUser(): void
@@ -84,12 +150,12 @@ class MySqlTest extends TestCase
         $this->expectException(\mysqli_sql_exception::class);
         $this->expectExceptionMessageRegExp("/^Access denied for user 'unknown'@'localhost' \(using password: YES\)$/");
         $this->expectExceptionCode(1045);
-        new \RHo\Sql\MySql('SET @a=1');
+        new \RHo\Sql\MySql();
     }
 
-    public function testConnectionErrorWithWrongHost(): void
+    public function testConnectionErrorWithWrongPassword(): void
     {
-        ini_set('mysqli.default_host', '1.2.3.4.5');
+        ini_set('mysqli.default_host', 'local');
         $this->expectException(\mysqli_sql_exception::class);
         $this->expectExceptionMessageRegExp("/^php_network_getaddresses: getaddrinfo failed: Name or service not known$/");
         $this->expectExceptionCode(2002);
