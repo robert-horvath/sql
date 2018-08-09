@@ -3,10 +3,10 @@
 [![Latest Stable Version](https://img.shields.io/packagist/v/robert/sql.svg)](https://packagist.org/packages/robert/sql)
 
 # SQL
-The SQL module is a thin wrapper around PHP's [MySQLi](http://php.net/manual/en/intro.mysqli.php) extension, using the Facade Design Pattern. It executes 
+The SQL module is a thin wrapper around PHP's [MySQLi](http://php.net/manual/en/intro.mysqli.php) extension, using the [Facade Design Pattern](https://en.wikipedia.org/wiki/Facade_pattern#PHP). It executes 
 [prepared statements](http://php.net/manual/en/mysqli.quickstart.prepared-statements.php) and raises [mysqli_sql_exception](http://php.net/manual/en/class.mysqli-sql-exception.php) if an error occures.
 
-The connection settings shall be stored in php.ini file.
+The connection settings shall be stored in ```php.ini``` file.
 
 ## Example usage
 ```php
