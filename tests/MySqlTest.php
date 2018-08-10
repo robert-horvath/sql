@@ -80,12 +80,12 @@ class MySqlTest extends TestCase
     public function testFunction1(): void
     {
         $db = new \RHo\Sql\MySql();
-        $db->prepareWithParam('SELECT `test_schema`.f1() as `x`');
         $this->assertEquals([
             (object) [
                 'x' => '100'
             ]
-        ], $db->execute());
+        ], $db->prepareWithParam('SELECT `test_schema`.f1() as `x`')
+            ->execute());
         $this->assertTrue($db->ping());
     }
 
@@ -160,5 +160,16 @@ class MySqlTest extends TestCase
         $this->expectExceptionMessageRegExp("/^php_network_getaddresses: getaddrinfo failed: Name or service not known$/");
         $this->expectExceptionCode(2002);
         new \RHo\Sql\MySql('SET @a=1');
+    }
+
+    public function testPrepareError(): void
+    {
+        ini_set('mysqli.default_user', 'testuser');
+        ini_set('mysqli.default_host', 'localhost');
+        $this->expectException(\mysqli_sql_exception::class);
+        $this->expectExceptionMessageRegExp("/^You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1$/");
+        $this->expectExceptionCode(1064);
+        $db = new \RHo\Sql\MySql();
+        $db->prepareWithParam('CALL');
     }
 }

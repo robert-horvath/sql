@@ -40,11 +40,12 @@ final class MySql implements SqlInterface
         return $arr;
     }
 
-    public function prepareWithParam(string $query, string $types = NULL, &...$vars): void
+    public function prepareWithParam(string $query, string $types = NULL, &...$vars): SqlInterface
     {
         $this->stmt = $this->db->prepare($query);
         if ($types !== NULL)
             $this->stmt->bind_param($types, ...$vars);
+        return $this;
     }
 
     private function fetchObject(mysqli_result $result): array
