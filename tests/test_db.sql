@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS `test_schema`;
-DROP USER IF EXISTS 'testuser'@'localhost';
+-- DROP USER IF EXISTS 'testuser'@'localhost';
 
 CREATE DATABASE `test_schema`;
 USE `test_schema`;
