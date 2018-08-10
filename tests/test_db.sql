@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS `test_schema`;
+DROP USER 'testuser'@'localhost';
+
 CREATE DATABASE `test_schema`;
 USE `test_schema`;
 
@@ -18,18 +21,13 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `f1`() RETURNS varchar(10) CHARSET la
 BEGIN
   RETURN '100';
 END ;;
-DELIMITER ;
 
-DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `f2`(_i integer) RETURNS int(11)
 BEGIN
   RETURN _i+1;
 END ;;
-DELIMITER ;
 
-DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp`(_i integer, _s varchar(20))
 BEGIN
   SELECT `id`,CONCAT(`value`,_s) as `value` FROM main_table WHERE `id`>_i;
 END ;;
-

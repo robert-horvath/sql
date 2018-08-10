@@ -18,8 +18,8 @@ final class MySql implements SqlInterface
 
     public function __construct()
     {
-        $this->db = $this->connect();
         $this->reportAllErrors();
+        $this->db = $this->connect();
     }
 
     public function __destruct()
