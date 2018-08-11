@@ -13,7 +13,7 @@ class MySqlTest extends TestCase
 
         $i = 9;
         $s = '!';
-        $db->prepareWithParam('CALL `test_schema`.sp(?,?)', 'is', $i, $s);
+        $db->prepare('CALL `test_schema`.sp(?,?)', 'is', $i, $s);
         $this->assertTrue($db->ping());
 
         $this->assertEquals([
@@ -53,8 +53,8 @@ class MySqlTest extends TestCase
         $i2 = 29;
         $s2 = '#';
 
-        $db1->prepareWithParam('CALL `test_schema`.sp(?,?)', 'is', $i1, $s1);
-        $db2->prepareWithParam('CALL `test_schema`.sp(?,?)', 'is', $i2, $s2);
+        $db1->prepare('CALL `test_schema`.sp(?,?)', 'is', $i1, $s1);
+        $db2->prepare('CALL `test_schema`.sp(?,?)', 'is', $i2, $s2);
         $this->assertTrue($db1->ping());
         $this->assertTrue($db2->ping());
 
@@ -84,7 +84,7 @@ class MySqlTest extends TestCase
             (object) [
                 'x' => '100'
             ]
-        ], $db->prepareWithParam('SELECT `test_schema`.f1() as `x`')
+        ], $db->prepare('SELECT `test_schema`.f1() as `x`')
             ->execute());
         $this->assertTrue($db->ping());
     }
@@ -93,7 +93,7 @@ class MySqlTest extends TestCase
     {
         $i = 0;
         $db = new \RHo\Sql\MySql();
-        $db->prepareWithParam('SELECT `test_schema`.f2(?) as `i`', 'i', $i);
+        $db->prepare('SELECT `test_schema`.f2(?) as `i`', 'i', $i);
         $this->assertEquals([
             (object) [
                 'i' => 1
@@ -116,7 +116,7 @@ class MySqlTest extends TestCase
         $i = 19;
         $s = '%';
 
-        $db->prepareWithParam('CALL `test_schema`.sp(?,?)', 'is', $i, $s);
+        $db->prepare('CALL `test_schema`.sp(?,?)', 'is', $i, $s);
 
         $this->assertEquals([
             (object) [
@@ -129,7 +129,7 @@ class MySqlTest extends TestCase
             ]
         ], $db->execute());
 
-        $db->prepareWithParam('SELECT `test_schema`.f2(?) as `i`', 'i', $i);
+        $db->prepare('SELECT `test_schema`.f2(?) as `i`', 'i', $i);
         $this->assertEquals([
             (object) [
                 'i' => 20
@@ -170,6 +170,6 @@ class MySqlTest extends TestCase
         $this->expectExceptionMessageRegExp("/^You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1$/");
         $this->expectExceptionCode(1064);
         $db = new \RHo\Sql\MySql();
-        $db->prepareWithParam('CALL');
+        $db->prepare('CALL');
     }
 }

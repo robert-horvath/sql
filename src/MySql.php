@@ -40,7 +40,7 @@ final class MySql implements SqlInterface
         return $arr;
     }
 
-    public function prepareWithParam(string $query, string $types = NULL, &...$vars): SqlInterface
+    public function prepare(string $query, string $types = NULL, &...$vars): SqlInterface
     {
         $this->stmt = $this->db->prepare($query);
         if ($types !== NULL)

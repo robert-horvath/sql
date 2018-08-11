@@ -17,7 +17,7 @@ try {
     $s = 'text';
     
     $db = new MySql();
-    $db->prepareWithParam('CALL `db`.`stored_proc`(?,?)', 'is', $i, $s);
+    $db->prepare('CALL `db`.`stored_proc`(?,?)', 'is', $i, $s);
     $arr = $db->execute();
 
     var_dump($arr);
